@@ -1,0 +1,34 @@
+# Copyright David Abrahams 2006. Distributed under the Boost
+# Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+import python ;
+
+using python ;
+lib libboost_python : : <name>boost_python ;
+project : requirements <library>libboost_python ;
+
+# Declare the three extension modules.  You can specify multiple
+# source files after the colon separated by spaces.
+python-extension range_list : range_list.cpp ;
+
+# Put the extension and Boost.Python DLL in the current directory, so
+# that running script by hand works.
+install convenient_copy 
+  : range_list 
+  : <install-dependencies>on <install-type>SHARED_LIB <install-type>PYTHON_EXTENSION 
+    <location>. 
+  ;
+
+# A little "rule" (function) to clean up the syntax of declaring tests
+# of these extension modules.
+local rule run-test ( test-name : sources + )
+{
+    import testing ;
+    testing.make-test run-pyd : $(sources) : : $(test-name) ;
+}
+
+# Declare test targets
+run-test hello : range_list hello.py ;
+
+
