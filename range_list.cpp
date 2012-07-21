@@ -25,19 +25,6 @@ struct range_item{
 	{
 		return address <= a && a < address+size;
 	}
-	
-	bool operator==(object o)const
-	{
-		if(o.ptr()==NULL){
-			return address==-1;
-		}
-		extract<range_item&> x(o);
-		if(x.check()){
-			range_item& y=x();
-			return address==y.address && size==y.size;
-		}
-		return false;
-	}
 };
 
 ostream& operator<<(ostream& o, range_item r)
@@ -108,11 +95,11 @@ struct range_list{
 		throw std::invalid_argument("not in list");
 	}
 	
-    range_item search(addr_t address)
+    object search(addr_t address)
 	{
         iter_t it = _simple_search(address), end=_data.end();
         if(it==end || !it->second.has(address))
-            return range_item();
+            return object();
         return it->second;
 	}
 
