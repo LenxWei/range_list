@@ -1,4 +1,4 @@
-from range_list import *
+from range_list0 import *
 from random import randrange, seed
 import time
 
