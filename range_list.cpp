@@ -31,9 +31,10 @@ struct range_item{
 		if(o.ptr()==NULL){
 			return address==-1;
 		}
-		range_item& x=extract<range_item&>(o);
+		extract<range_item&> x(o);
 		if(x.check()){
-			return address==x.address && size==x.size;
+			range_item& y=x();
+			return address==y.address && size==y.size;
 		}
 		return false;
 	}
