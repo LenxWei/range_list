@@ -49,6 +49,16 @@ ostream& operator<<(ostream& o, range_item r)
 	return o;
 }
 
+typedef map<addr_t, range_item>::iterator range_iter;
+
+typedef pair<const addr_t, range_item> range_iter_deref;
+
+ostream& operator<<(ostream& o, const range_iter_deref& r)
+{
+	o << r.second;
+	return o;
+}
+
 struct range_list{
 	map<addr_t, range_item> _data;
 	typedef map<addr_t, range_item>::iterator iter_t;
@@ -138,14 +148,21 @@ BOOST_PYTHON_MODULE(range_list)
 		.def(self_ns::self == self_ns::self)
 		;
 	class_<range_list>("range_list")
-		.def("__iter__", iterator<map<addr_t, range_item> >())
-		.property("all", range(&range_list::begin, &range_list::end))
-		.def("size", &range_list::size)
+		.def("__iter__", range(&range_list::begin, &range_list::end))
+		.def("__len__", &range_list::size)
 		.def("clear", &range_list::clear)
 		.def("insert", &range_list::insert)
 		.def("remove", &range_list::remove)
 		.def("search", &range_list::search)
 		.def("finger", &range_list::finger)
+		;
+	class_<range_iter>("range_iter")
+		.def(self_ns::self == self_ns::self)
+		;
+	class_<range_iter_deref>("range_iter_deref")
+		.def_readonly("item", &pair<const addr_t,range_item>::second)
+		.def_readonly("address",&pair<const addr_t,range_item>::first)
+		.def(self_ns::str(self_ns::self))
 		;
 }
 
