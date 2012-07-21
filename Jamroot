@@ -29,6 +29,6 @@ local rule run-test ( test-name : sources + )
 }
 
 # Declare test targets
-run-test hello : range_list hello.py ;
+run-test hello : range_list hello-range.py ;
 
 
