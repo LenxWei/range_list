@@ -26,14 +26,16 @@ struct range_item{
 		return address <= a && a < address+size;
 	}
 	
-	bool operator==(const range_item& o)const
+	bool operator==(object o)const
 	{
-		return address==o.address && size==o.size;
-	}
-	
-	bool is_none()const
-	{
-		return address==-1;
+		if(o.ptr()==NULL){
+			return address==-1;
+		}
+		range_item& x=extract<range_item&>(o);
+		if(x.check()){
+			return address==x.address && size==x.size;
+		}
+		return false;
 	}
 };
 
@@ -142,10 +144,9 @@ BOOST_PYTHON_MODULE(range_list)
 		.def(init<>())
 		.def_readonly("address", &range_item::address)
 		.def_readwrite("size", &range_item::size)
-		.def("is_none", &range_item::is_none)
 		.def("has", &range_item::has)
 		.def(self_ns::str(self_ns::self))
-		.def(self_ns::self == self_ns::self)
+		.def(self_ns::self == object)
 		;
 	class_<range_list>("range_list")
 		.def("__iter__", range(&range_list::begin, &range_list::end))
