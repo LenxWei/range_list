@@ -36,7 +36,7 @@ struct range_item{
 
 };
 
-const range_item r_None();
+range_item r_None;
 
 ostream& operator<<(ostream& o, range_item r)
 {
@@ -65,7 +65,7 @@ typedef pair<const addr_t, range_item> range_iter_deref;
 bool operator==(const range_item& s, const object& o)
 {
 	if(o.is_none())
-		return s.address==0 && s.size==0;
+		return s.address==0;
 	{
 		extract<range_item&> x(o);
 		if(x.check()){
@@ -200,10 +200,10 @@ BOOST_PYTHON_MODULE(range_list)
 	.def("clear", &range_list::clear)
 	.def("insert", &range_list::insert)
 	.def("remove", &range_list::remove)
-	.def("search", &range_list::search)
-	.def("index", &range_list::index)
-	.def("at", &range_list::at)
-	.def("finger", &range_list::finger)
+	.def("search", &range_list::search,return_internal_reference<>())
+	.def("index",&range_list::index)
+	.def("at", &range_list::at,return_internal_reference<>())
+	.def("finger", &range_list::finger,return_internal_reference<>())
 	;
 	class_<range_iter>("range_iter")
 	.def(self_ns::self == self_ns::self)
