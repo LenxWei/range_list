@@ -251,7 +251,7 @@ struct range_list{
 		return it->second;
 	}
 
-    void merge(const range_list& o)
+    void merge(range_list& o)
     {
         for(range_iter it=o.begin(),end=o.end();it!=end;++it){
             insert(it->second);

@@ -49,3 +49,7 @@ l.remove(range_item(2,3))
 print "after remove the first item, now len is", len(l)
 l.remove_address(90)
 print "after remove the last item, now len is", len(l)
+
+i3=i1+1
+print "i1+1:", l.at(i3)
+
