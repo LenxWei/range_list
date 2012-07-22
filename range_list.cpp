@@ -1,6 +1,7 @@
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
+#include <boost/pool/pool_alloc.hpp>
 #include <map>
 #include <string>
 #include <sstream>
@@ -42,7 +43,10 @@ ostream& operator<<(ostream& o, range_item r)
 	return o;
 }
 
-typedef map<addr_t, range_item>::iterator range_iter;
+typedef map<addr_t, range_item, std::less<addr_t>,
+			boost::fast_pool_allocator<pair<const addr_t, range_item> > 
+		> range_map_t;
+typedef range_map_t::iterator range_iter;
 
 typedef pair<const addr_t, range_item> range_iter_deref;
 
@@ -90,8 +94,8 @@ ostream& operator<<(ostream& o, const range_iter_deref& r)
 }
 
 struct range_list{
-	map<addr_t, range_item> _data;
-	typedef map<addr_t, range_item>::iterator iter_t;
+	range_map_t _data;
+	typedef range_iter iter_t;
 	
 	size_t size()const
 	{
