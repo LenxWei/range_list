@@ -30,6 +30,7 @@ assert l.at(x)==range_item(50,5)
 x,y=l.detailed_search(49)
 assert l.at(y)==range_item(50,5)
 assert l.at(x)==range_item(40,5)
+assert x+1==y
 
 x,y=l.detailed_search(1)
 assert x==None
@@ -45,11 +46,11 @@ i2=l.index(80)
 for x in l.slice(i1,i2):
 	print x
 
-l.delete(i2)
+l.remove_address(80)
 print "after remove 80, now  len is", len(l)
-l.remove(range_item(2,3))
+l.delete(l.begin())
 print "after remove the first item, now len is", len(l)
-l.remove_address(90)
+l.remove(l.at(l.end()-1))
 print "after remove the last item, now len is", len(l)
 
 i3=i1+1
@@ -67,6 +68,8 @@ for x in l:
 s="str"
 a=range_item(256,5,s)
 l.insert(a)
+b=l.search(257)
+print "\nobj in range_item is",b.obj
 
 print "\ninsert an object with range_item:"
 print l.at(l.end()-1)
