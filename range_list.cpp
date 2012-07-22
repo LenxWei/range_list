@@ -131,7 +131,8 @@ ok:
     {
         addr_t a=extract<addr_t>(obj.attr("address"));
         range_iter it=_simple_search(a);
-        if(it!=end() && it->second==obj)
+        size_t s=extract<size_t>(obj.attr("size"));
+        if(it!=end() && it->first==a && extract<size_t>(it->second.attr("size"))==s)
         {
             _data.erase(it);
             return;
