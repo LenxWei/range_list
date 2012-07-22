@@ -43,7 +43,7 @@ struct range_item{
 
 range_item r_None;
 
-ostream& operator<<(ostream& o, range_item r)
+ostream& operator<<(ostream& o, const range_item& r)
 {
 	ostringstream s;
 	s << hex << r.address <<":"<< r.size ;
