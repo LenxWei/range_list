@@ -61,8 +61,6 @@ typedef map<addr_t, range_item
 
 typedef range_map_t::iterator range_iter;
 
-typedef pair<const addr_t, range_item> range_iter_deref;
-
 bool operator==(const range_item& s, const object& o)
 {
 	if(o.is_none())
@@ -81,17 +79,6 @@ bool operator==(const range_item& s, const object& o)
 bool operator!=(const range_item& s, const object& o)
 {
 	return !(s==o);
-}
-
-bool operator==(const range_iter_deref& x, const range_iter_deref&  y)
-{
-	return x.second.address==y.second.address && x.second.size==y.second.size;
-}
-
-ostream& operator<<(ostream& o, const range_iter_deref& r)
-{
-	o << r.second;
-	return o;
 }
 
 struct range_slice{
@@ -162,6 +149,17 @@ struct range_list{
 		}
 		throw std::invalid_argument("not in list");
 	}
+
+	void remove_address(addr_t address)
+	{
+		range_iter it=_simple_search(address);
+		if(it->second.has(address)){
+			_data.erase(it);
+			return;
+		}
+		throw std::invalid_argument("not in list");
+	}
+
 
 	range_iter index(addr_t address)
 	{
@@ -253,6 +251,7 @@ BOOST_PYTHON_MODULE(range_list)
 	.def("clear", &range_list::clear)
 	.def("insert", &range_list::insert)
 	.def("remove", &range_list::remove)
+	.def("remove_address", &range_list::remove_address)
 	.def("search", &range_list::search,return_internal_reference<>())
 	.def("index",&range_list::index)
 	.def("at", &range_list::at,return_internal_reference<>())
@@ -268,12 +267,6 @@ BOOST_PYTHON_MODULE(range_list)
 	class_<range_slice>("range_slice", init<range_iter, range_iter>())
 	.def("__iter__", &range_slice::own, return_internal_reference<>())
 	.def("next", &range_slice::next, return_internal_reference<>())
-	;
-	class_<range_iter_deref>("range_iter_deref")
-	.def_readonly("item", &pair<const addr_t,range_item>::second)
-	.def_readonly("address",&pair<const addr_t,range_item>::first)
-	.def(self_ns::str(self_ns::self))
-	.def(self_ns::self == self_ns::self)
 	;
 }
 

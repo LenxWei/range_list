@@ -15,6 +15,7 @@ for i in xrange(1,10):
 	a=range_item(i*10,5)
 	l.insert(a)
 
+print "all:"
 for i in l:
 	print i
 	
@@ -33,3 +34,19 @@ assert l.at(x)==range_item(40,5)
 x,y=l.detailed_search(1)
 assert x==None
 assert l.at(y)==range_item(2,3)
+
+print "\nslice to end:"
+i1=l.index(50)
+for x in l.slice(i1):
+	print x
+
+print "\nslice:"
+i2=l.index(80)
+for x in l.slice(i1,i2):
+	print x
+
+
+l.remove(range_item(2,3))
+print "after remove the first item, now len is", len(l)
+l.remove_address(90)
+print "after remove the last item, now len is", len(l)
