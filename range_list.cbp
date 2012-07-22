@@ -32,7 +32,16 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="Jamroot" />
+		<Unit filename="README.md" />
+		<Unit filename="benchmark_c.py" />
+		<Unit filename="benchmark_cs.py" />
+		<Unit filename="benchmark_p.py" />
+		<Unit filename="benchmark_ps.py" />
+		<Unit filename="config.py" />
+		<Unit filename="hello-range.py" />
 		<Unit filename="range_list.cpp" />
+		<Unit filename="range_list0.py" />
 		<Extensions>
 			<code_completion />
 			<envvars />
