@@ -279,6 +279,7 @@ BOOST_PYTHON_MODULE(range_list)
 	.def("has", &range_item::has)
 	.def(self_ns::str(self_ns::self))
 	.def(self_ns::operator==(self_ns::self, object()))
+	.def(self_ns::operator!=(self_ns::self, object()))
 	;
 	class_<range_list>("range_list")
 	.def("__iter__", &range_list::all)
