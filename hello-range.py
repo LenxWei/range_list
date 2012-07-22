@@ -45,6 +45,8 @@ i2=l.index(80)
 for x in l.slice(i1,i2):
 	print x
 
+l.delete(i2)
+print "after remove 80, now  len is", len(l)
 l.remove(range_item(2,3))
 print "after remove the first item, now len is", len(l)
 l.remove_address(90)
@@ -52,4 +54,20 @@ print "after remove the last item, now len is", len(l)
 
 i3=i1+1
 print "i1+1:", l.at(i3)
+
+l1=range_list()
+l1.insert(range_item(100,5))
+l1.insert(range_item(110,5))
+
+l.merge(l1)
+print "\nmerge:"
+for x in l:
+  print x
+
+s="str"
+a=range_item(256,5,s)
+l.insert(a)
+
+print "\ninsert an object with range_item:"
+print l.at(l.end()-1)
 
