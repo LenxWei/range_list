@@ -18,11 +18,15 @@ typedef unsigned long addr_t;
 struct range_item{
 	const addr_t address;
 	addr_t size;
+    object obj;
 
 	range_item():address(0),size(0)
 	{}
 
 	range_item(addr_t a, addr_t s):address(a),size(s)
+	{}
+
+	range_item(addr_t a, addr_t s, object x):address(a),size(s),obj(x)
 	{}
 
 	bool has(addr_t a)const
@@ -270,6 +274,7 @@ BOOST_PYTHON_MODULE(range_list)
 	class_<range_item>("range_item", init<addr_t, addr_t>())
 	.def_readonly("address", &range_item::address)
 	.def_readwrite("size", &range_item::size)
+	.def_readwrite("obj", &range_item::obj)
 	.def("has", &range_item::has)
 	.def(self_ns::str(self_ns::self))
 	.def(self_ns::operator==(self_ns::self, object()))
