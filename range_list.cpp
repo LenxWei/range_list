@@ -155,6 +155,19 @@ struct range_list{
 		return it->second;
 	}
 
+	object detailed_search(addr_t address)
+	{
+		range_iter it=_simple_search(address), end=_data.end();
+		if(it==end)
+			return make_tuple(object(), begin());
+		if(it->second.has(address))
+			return make_tuple(it,it);
+		range_iter next=it+1;
+		if(next==end)
+			return make_tuple(it,object());
+		return make_tuple(it, next);
+	}
+	
 	range_item& finger(addr_t address)
 	{
 		return search(address);
@@ -204,6 +217,7 @@ BOOST_PYTHON_MODULE(range_list)
 	.def("index",&range_list::index)
 	.def("at", &range_list::at,return_internal_reference<>())
 	.def("finger", &range_list::finger,return_internal_reference<>())
+	.def("detailed_search",&range_list::detailed_search)
 	;
 	class_<range_iter>("range_iter")
 	.def(self_ns::self == self_ns::self)
