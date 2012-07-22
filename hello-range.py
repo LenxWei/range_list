@@ -8,6 +8,8 @@ class range_item:
         self.size = size
     def __str__(self):
         return "%x:%x"%(self.address,self.size)
+    def __eq__(self,o):
+        return self.address==o.address and self.size==o.size
 
 a=range_item(2,3)
 assert a!=None
@@ -28,6 +30,7 @@ for i in l:
 	print i
 
 x,y=l.detailed_search(100)
+print "\ndetailed search(100)",l.at(x),y
 assert y==None
 assert l.at(x)==range_item(90,5)
 
@@ -73,12 +76,20 @@ print "\nmerge:"
 for x in l:
   print x
 
-s="str"
-a=range_item(256,5,s)
-l.insert(a)
-b=l.search(257)
-print "\nobj in range_item is",b.obj
+class range_item_s(range_item):
+    # "range" is reserved
+    def __init__(self,address,size,s):
+        self.address = address
+        self.size = size
+        self.s=s
+    def __str__(self):
+        return "%x:%x - %s"%(self.address,self.size,self.s)
 
-print "\ninsert an object with range_item:"
-print l.at(l.end()-1)
+s="str"
+a=range_item_s(256,5,s)
+l.insert(a)
+
+print "\ninsert a range_item with extra attr:"
+b=l.search(257)
+print "the item  is",b
 
