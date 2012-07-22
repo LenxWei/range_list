@@ -30,22 +30,22 @@ for i in l:
 	print i
 
 x,y=l.detailed_search(100)
-print "\ndetailed search(100)",l.at(x),y
+print "\ndetailed search(100)",l[x],y
 assert y==None
-assert l.at(x)==range_item(90,5)
+assert l[x]==range_item(90,5)
 
 x,y=l.detailed_search(50)
 assert y==x
-assert l.at(x)==range_item(50,5)
+assert l[x]==range_item(50,5)
 
 x,y=l.detailed_search(49)
-assert l.at(y)==range_item(50,5)
-assert l.at(x)==range_item(40,5)
+assert l[y]==range_item(50,5)
+assert l[x]==range_item(40,5)
 assert x+1==y
 
 x,y=l.detailed_search(1)
 assert x==None
-assert l.at(y)==range_item(2,3)
+assert l[y]==range_item(2,3)
 
 print "\nslice to end:"
 i1=l.index(50)
@@ -59,13 +59,13 @@ for x in l.slice(i1,i2):
 
 l.remove_address(80)
 print "after remove 80, now  len is", len(l)
-l.delete(l.begin())
+del l[l.begin()]
 print "after remove the first item, now len is", len(l)
-l.remove(l.at(l.end()-1))
+l.remove(l[l.end()-1])
 print "after remove the last item, now len is", len(l)
 
 i3=i1+1
-print "i1+1:", l.at(i3)
+print "i1+1:", l[i3]
 
 l1=range_list()
 assert l1.insert(range_item(200,5))
