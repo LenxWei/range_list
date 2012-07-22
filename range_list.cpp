@@ -94,17 +94,19 @@ struct range_list{
 		range_iter it_l=_simple_search(address), end=_data.end();
 		if(it_l==end){
 		    if( address+size <= begin()->first)
-                goto ok;
+      		          goto ok;
 		    return false; //intersect
 		}
 		if(__has(it_l, address)) // intersect
-            return false;
+            		return false;
 
+		{
 		range_iter it_h=it_l; ++it_h;
 		if(it_h==end)
 			goto ok;
 		if(address+size > it_h->first)
-            return false;
+            		return false;
+		}
     ok:
 		_data.insert(make_pair(address, obj));
 		return true;
@@ -119,9 +121,10 @@ struct range_list{
 		throw std::invalid_argument("not in list");
     }
 
-	void remove(const range_item& obj)
+	void remove(const object& obj)
 	{
-		range_iter it=_simple_search(obj.address);
+		addr_t a=extract<addr_t>(obj.attr("address"));
+		range_iter it=_simple_search(a);
 		if(it!=end() && it->second==obj){
 			_data.erase(it);
 			return;
