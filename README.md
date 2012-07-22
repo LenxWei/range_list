@@ -3,7 +3,8 @@ range_list
 
 a sorted range list for python in boost::python
 
-use bjam to compile.
+use bjam to compile:
+	bjam variant=release
 
 hello_range.py is a simple example.
 
