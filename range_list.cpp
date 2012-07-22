@@ -36,6 +36,8 @@ struct range_item{
 
 };
 
+const range_item r_None();
+
 ostream& operator<<(ostream& o, range_item r)
 {
 	ostringstream s;
@@ -46,14 +48,14 @@ ostream& operator<<(ostream& o, range_item r)
 
 #if 1
 typedef map<addr_t, range_item, std::less<addr_t>,
-	    boost::fast_pool_allocator<pair<const addr_t, range_item>
-				       //,boost::default_user_allocator_new_delete
-				       //,boost::details::pool::null_mutex
-				      > 
-	> range_map_t;
+			boost::fast_pool_allocator<pair<const addr_t, range_item>
+				//,boost::default_user_allocator_new_delete
+				//,boost::details::pool::null_mutex
+			> 
+		> range_map_t;
 #else
 typedef map<addr_t, range_item
-		> range_map_t;
+> range_map_t;
 #endif
 
 typedef range_map_t::iterator range_iter;
@@ -71,25 +73,13 @@ bool operator==(const range_item& s, const object& o)
 			return s.address==y.address && s.size==y.size;
 		}
 	}
-	{
-		extract<range_iter_deref&> x(o);
-		if(x.check()){
-			range_iter_deref& y=x();
-			return s.address==y.second.address && s.size==y.second.size;
-		}
-	}
-
+	
 	return false;
 }
-	
+
 bool operator!=(const range_item& s, const object& o)
 {
 	return !(s==o);
-}
-
-bool operator==(const range_iter_deref& x, const range_item&  y)
-{
-	return x.second.address==y.address && x.second.size==y.size;
 }
 
 bool operator==(const range_iter_deref& x, const range_iter_deref&  y)
@@ -117,7 +107,7 @@ struct range_list{
 		return _data.clear();
 	}
 	
-    iter_t _simple_search(addr_t address)
+	iter_t _simple_search(addr_t address)
 	{
 		iter_t it=_data.upper_bound(address);
 		if(it!=_data.begin())
@@ -125,7 +115,7 @@ struct range_list{
 		return _data.end();
 	}
 	
-    bool insert(const range_item& obj)
+	bool insert(const range_item& obj)
 	{
 		iter_t it_l=_simple_search(obj.address), end=_data.end();
 		iter_t it_h=_simple_search(obj.address+obj.size-1);
@@ -139,7 +129,7 @@ struct range_list{
 		return true;
 	}
 	
-    void remove(const range_item& obj)
+	void remove(const range_item& obj)
 	{
 		iter_t it=_simple_search(obj.address);
 		if(it->second==obj){
@@ -149,7 +139,7 @@ struct range_list{
 		throw std::invalid_argument("not in list");
 	}
 	
-    range_iter index(addr_t address)
+	range_iter index(addr_t address)
 	{
 		iter_t it=_simple_search(address), end=_data.end();
 		if(it==end || !it->second.has(address))
@@ -157,19 +147,19 @@ struct range_list{
 		return it;
 	}
 
-    range_item search(addr_t address)
+	range_item& search(addr_t address)
 	{
-        iter_t it = _simple_search(address), end=_data.end();
-        if(it==end || !it->second.has(address))
-            return range_item();
-	return it->second;
+		iter_t it = _simple_search(address), end=_data.end();
+		if(it==end || !it->second.has(address))
+			return r_None;
+		return it->second;
 	}
 
-	range_item finger(addr_t address)
+	range_item& finger(addr_t address)
 	{
 		return search(address);
 	}
-	 
+	
 	iter_t begin()
 	{
 		return _data.begin();
@@ -179,51 +169,51 @@ struct range_list{
 	{
 		return _data.end();
 	}
+
+	range_item& at(const range_iter& it)
+	{
+		if(it==_data.end())
+			throw invalid_argument("null iter");
+		return it->second;
+	}
+
 };
 
-range_iter_deref deref(const range_iter& it)
-{
-	return *it;
-}
-
-
 void translator(const invalid_argument& x) {
-    PyErr_SetString(PyExc_UserWarning, x.what());
+	PyErr_SetString(PyExc_UserWarning, x.what());
 }
 
 BOOST_PYTHON_MODULE(range_list)
 {
 	// register_exception_translator<
-          // invalid_argument>(translator);
+	// invalid_argument>(translator);
 	class_<range_item>("range_item", init<addr_t, addr_t>())
-		.def_readonly("address", &range_item::address)
-		.def_readwrite("size", &range_item::size)
-		.def("has", &range_item::has)
-		.def(self_ns::str(self_ns::self))
-		//.def(self_ns::self == self_ns::self)
-		//.def(self_ns::self == range_iter_deref())
-		.def(self_ns::operator==(self_ns::self, object()))
-		;
+	.def_readonly("address", &range_item::address)
+	.def_readwrite("size", &range_item::size)
+	.def("has", &range_item::has)
+	.def(self_ns::str(self_ns::self))
+	.def(self_ns::operator==(self_ns::self, object()))
+	;
 	class_<range_list>("range_list")
-		.def("__iter__", range(&range_list::begin, &range_list::end))
-		.def("__len__", &range_list::size)
-		.def("clear", &range_list::clear)
-		.def("insert", &range_list::insert)
-		.def("remove", &range_list::remove)
-		.def("search", &range_list::search)
-		.def("index", &range_list::index)
-		.def("finger", &range_list::finger)
-		;
+	.def("__iter__", range(&range_list::begin, &range_list::end))
+	.def("__len__", &range_list::size)
+	.def("clear", &range_list::clear)
+	.def("insert", &range_list::insert)
+	.def("remove", &range_list::remove)
+	.def("search", &range_list::search)
+	.def("index", &range_list::index)
+	.def("at", &range_list::at)
+	.def("finger", &range_list::finger)
+	;
 	class_<range_iter>("range_iter")
-		.def(self_ns::self == self_ns::self)
-		.def(self_ns::self != self_ns::self)
-		;
+	.def(self_ns::self == self_ns::self)
+	.def(self_ns::self != self_ns::self)
+	;
 	class_<range_iter_deref>("range_iter_deref")
-		.def_readonly("item", &pair<const addr_t,range_item>::second)
-		.def_readonly("address",&pair<const addr_t,range_item>::first)
-		.def(self_ns::str(self_ns::self))
-		.def(self_ns::self == self_ns::self)
-//		.def(self_ns::self == range_item())
-		;
+	.def_readonly("item", &pair<const addr_t,range_item>::second)
+	.def_readonly("address",&pair<const addr_t,range_item>::first)
+	.def(self_ns::str(self_ns::self))
+	.def(self_ns::self == self_ns::self)
+	;
 }
 
