@@ -183,14 +183,16 @@ struct range_list{
 		return _data.end();
 	}
 	
-	object slice(const range_iter& it)
+	typedef objects::iterator_range<objects::default_iterator_call_policies, range_iter> range_slice_t;
+
+	range_slice_t slice(const range_iter& it)
 	{
-		return range(it, end());
+		return range_slice_t(object(), it, end());
 	}
 
-	object slice2(const range_iter& it, const range_iter& it2)
+	range_slice_t slice2(const range_iter& it, const range_iter& it2)
 	{
-		return range(it, it2);
+		return range_slice_t(object(), it, it2);
 	}
 
 	range_item& at(const range_iter& it)
@@ -226,8 +228,8 @@ BOOST_PYTHON_MODULE(range_list)
 	.def("search", &range_list::search,return_internal_reference<>())
 	.def("index",&range_list::index)
 	.def("at", &range_list::at,return_internal_reference<>())
-	.def("slice",&range_list::slice,return_internal_reference<>())
-	.def("slice",&range_list::slice2,return_internal_reference<>())
+	.def("slice",&range_list::slice)
+	.def("slice",&range_list::slice2)
 	.def("finger", &range_list::finger,return_internal_reference<>())
 	.def("detailed_search",&range_list::detailed_search)
 	;
