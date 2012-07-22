@@ -162,7 +162,8 @@ struct range_list{
 			return make_tuple(object(), begin());
 		if(it->second.has(address))
 			return make_tuple(it,it);
-		range_iter next=it+1;
+		range_iter next=it;
+                ++next;
 		if(next==end)
 			return make_tuple(it,object());
 		return make_tuple(it, next);
