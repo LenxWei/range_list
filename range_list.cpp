@@ -95,7 +95,6 @@ ostream& operator<<(ostream& o, const range_iter_deref& r)
 
 struct range_list{
 	range_map_t _data;
-	typedef range_iter iter_t;
 	
 	size_t size()const
 	{
@@ -107,9 +106,9 @@ struct range_list{
 		return _data.clear();
 	}
 	
-	iter_t _simple_search(addr_t address)
+	range_iter _simple_search(addr_t address)
 	{
-		iter_t it=_data.upper_bound(address);
+		range_iter it=_data.upper_bound(address);
 		if(it!=_data.begin())
 			return --it;
 		return _data.end();
@@ -117,8 +116,8 @@ struct range_list{
 	
 	bool insert(const range_item& obj)
 	{
-		iter_t it_l=_simple_search(obj.address), end=_data.end();
-		iter_t it_h=_simple_search(obj.address+obj.size-1);
+		range_iter it_l=_simple_search(obj.address), end=_data.end();
+		range_iter it_h=_simple_search(obj.address+obj.size-1);
 		if(it_l!=it_h)
 			return false;
 		if(it_l!=end){
@@ -131,7 +130,7 @@ struct range_list{
 	
 	void remove(const range_item& obj)
 	{
-		iter_t it=_simple_search(obj.address);
+		range_iter it=_simple_search(obj.address);
 		if(it->second==obj){
 			_data.erase(it);
 			return;
@@ -141,7 +140,7 @@ struct range_list{
 	
 	range_iter index(addr_t address)
 	{
-		iter_t it=_simple_search(address), end=_data.end();
+		range_iter it=_simple_search(address), end=_data.end();
 		if(it==end || !it->second.has(address))
 			throw std::invalid_argument("not in list");
 		return it;
@@ -149,7 +148,7 @@ struct range_list{
 
 	range_item& search(addr_t address)
 	{
-		iter_t it = _simple_search(address), end=_data.end();
+		range_iter it = _simple_search(address), end=_data.end();
 		if(it==end || !it->second.has(address))
 			return r_None;
 		return it->second;
@@ -174,14 +173,24 @@ struct range_list{
 		return search(address);
 	}
 	
-	iter_t begin()
+	range_iter begin()
 	{
 		return _data.begin();
 	}
 	
-	iter_t end()
+	range_iter end()
 	{
 		return _data.end();
+	}
+	
+	object slice(const range_iter& it)
+	{
+		return range(it, end());
+	}
+
+	object slice2(const range_iter& it, const range_iter& it2)
+	{
+		return range(it, it2);
 	}
 
 	range_item& at(const range_iter& it)
@@ -217,6 +226,8 @@ BOOST_PYTHON_MODULE(range_list)
 	.def("search", &range_list::search,return_internal_reference<>())
 	.def("index",&range_list::index)
 	.def("at", &range_list::at,return_internal_reference<>())
+	.def("slice",&range_list::slice,return_internal_reference<>())
+	.def("slice",&range_list::slice2,return_internal_reference<>())
 	.def("finger", &range_list::finger,return_internal_reference<>())
 	.def("detailed_search",&range_list::detailed_search)
 	;
