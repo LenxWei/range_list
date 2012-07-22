@@ -1,6 +1,7 @@
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
+#include <boost/python/object/iterator_core.hpp>
 #include <boost/pool/pool_alloc.hpp>
 //#include <boost/pool/singleton_pool.hpp>
 #include <map>
@@ -100,10 +101,15 @@ struct range_slice{
     range_slice(range_iter begin1, range_iter end1):_begin(begin1),_end(end1)
     {}
 
+    range_slice& own()
+    {
+        return *this;
+    }
+
     range_item& next()
     {
         if(_begin==_end)
-            stop_iteration_error();
+            boost::python::objects::stop_iteration_error();
         else{
             range_item& k=_begin->second;
             ++_begin;
@@ -259,7 +265,8 @@ BOOST_PYTHON_MODULE(range_list)
 	.def(self_ns::self == self_ns::self)
 	.def(self_ns::self != self_ns::self)
 	;
-	class_<range_slice>("range_slice")
+	class_<range_slice>("range_slice", init<range_iter, range_iter>())
+	.def("__iter__", &range_slice::own, return_internal_reference<>())
 	.def("next", &range_slice::next, return_internal_reference<>())
 	;
 	class_<range_iter_deref>("range_iter_deref")
