@@ -2,7 +2,7 @@
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/pool/pool_alloc.hpp>
-#include <boost/pool/singleton_pool.hpp>
+//#include <boost/pool/singleton_pool.hpp>
 #include <map>
 #include <string>
 #include <sstream>
@@ -47,7 +47,7 @@ ostream& operator<<(ostream& o, range_item r)
 #if 1
 typedef map<addr_t, range_item, std::less<addr_t>,
 	    boost::fast_pool_allocator<pair<const addr_t, range_item>
-				       //,boost::default_user_allocator_new_delete,
+				       //,boost::default_user_allocator_new_delete
 				       //,boost::details::pool::null_mutex
 				      > 
 	> range_map_t;
