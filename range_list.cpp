@@ -17,13 +17,13 @@ typedef unsigned long addr_t;
 struct range_item{
 	const addr_t address;
 	addr_t size;
-	
+
 	range_item():address(0),size(0)
 	{}
 
 	range_item(addr_t a, addr_t s):address(a),size(s)
 	{}
-	
+
 	bool has(addr_t a)const
 	{
 		return address <= a && a < address+size;
@@ -51,7 +51,7 @@ typedef map<addr_t, range_item, std::less<addr_t>,
 			boost::fast_pool_allocator<pair<const addr_t, range_item>
 				//,boost::default_user_allocator_new_delete
 				//,boost::details::pool::null_mutex
-			> 
+			>
 		> range_map_t;
 #else
 typedef map<addr_t, range_item
@@ -73,7 +73,7 @@ bool operator==(const range_item& s, const object& o)
 			return s.address==y.address && s.size==y.size;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -93,9 +93,28 @@ ostream& operator<<(ostream& o, const range_iter_deref& r)
 	return o;
 }
 
+struct range_slice{
+    range_iter _begin;
+    range_iter _end;
+
+    range_slice(range_iter begin1, range_iter end1):_begin(begin1),_end(end1)
+    {}
+
+    range_item& next()
+    {
+        if(_begin==_end)
+            stop_iteration_error();
+        else{
+            range_item& k=_begin->second;
+            ++_begin;
+            return k;
+        }
+    }
+};
+
 struct range_list{
 	range_map_t _data;
-	
+
 	size_t size()const
 	{
 		return _data.size();
@@ -105,7 +124,7 @@ struct range_list{
 	{
 		return _data.clear();
 	}
-	
+
 	range_iter _simple_search(addr_t address)
 	{
 		range_iter it=_data.upper_bound(address);
@@ -113,7 +132,7 @@ struct range_list{
 			return --it;
 		return _data.end();
 	}
-	
+
 	bool insert(const range_item& obj)
 	{
 		range_iter it_l=_simple_search(obj.address), end=_data.end();
@@ -127,7 +146,7 @@ struct range_list{
 		_data.insert(make_pair(obj.address, obj));
 		return true;
 	}
-	
+
 	void remove(const range_item& obj)
 	{
 		range_iter it=_simple_search(obj.address);
@@ -137,7 +156,7 @@ struct range_list{
 		}
 		throw std::invalid_argument("not in list");
 	}
-	
+
 	range_iter index(addr_t address)
 	{
 		range_iter it=_simple_search(address), end=_data.end();
@@ -167,33 +186,36 @@ struct range_list{
 			return make_tuple(it,object());
 		return make_tuple(it, next);
 	}
-	
+
 	range_item& finger(addr_t address)
 	{
 		return search(address);
 	}
-	
+
 	range_iter begin()
 	{
 		return _data.begin();
 	}
-	
+
 	range_iter end()
 	{
 		return _data.end();
 	}
-	
-	typedef objects::iterator_range<objects::default_iterator_call_policies, range_iter> range_slice_t;
 
-	range_slice_t slice(const range_iter& it)
+	range_slice slice(const range_iter& it)
 	{
-		return range_slice_t(object(), it, end());
+		return range_slice(it, end());
 	}
 
-	range_slice_t slice2(const range_iter& it, const range_iter& it2)
+	range_slice slice2(const range_iter& it, const range_iter& it2)
 	{
-		return range_slice_t(object(), it, it2);
+		return range_slice(it, it2);
 	}
+
+    range_slice all()
+    {
+        return range_slice(begin(),end());
+    }
 
 	range_item& at(const range_iter& it)
 	{
@@ -220,7 +242,7 @@ BOOST_PYTHON_MODULE(range_list)
 	.def(self_ns::operator==(self_ns::self, object()))
 	;
 	class_<range_list>("range_list")
-	.def("__iter__", range(&range_list::begin, &range_list::end))
+	.def("__iter__", &range_list::all)
 	.def("__len__", &range_list::size)
 	.def("clear", &range_list::clear)
 	.def("insert", &range_list::insert)
@@ -236,6 +258,9 @@ BOOST_PYTHON_MODULE(range_list)
 	class_<range_iter>("range_iter")
 	.def(self_ns::self == self_ns::self)
 	.def(self_ns::self != self_ns::self)
+	;
+	class_<range_slice>("range_slice")
+	.def("next", &range_slice::next, return_internal_reference<>())
 	;
 	class_<range_iter_deref>("range_iter_deref")
 	.def_readonly("item", &pair<const addr_t,range_item>::second)
