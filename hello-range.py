@@ -68,8 +68,17 @@ i3=i1+1
 print "i1+1:", l.at(i3)
 
 l1=range_list()
-l1.insert(range_item(100,5))
-l1.insert(range_item(110,5))
+assert l1.insert(range_item(200,5))
+assert l1.insert(range_item(220,5))
+assert l1.insert(range_item(210,5))
+assert l1.insert(range_item(190,5))
+assert l1.insert(range_item(205,5))
+assert not l1.insert(range_item(190,5))
+assert not l1.insert(range_item(189,5))
+assert not l1.insert(range_item(199,2))
+assert not l1.insert(range_item(194,2))
+assert not l1.insert(range_item(189,10))
+assert not l1.insert(range_item(224,10))
 
 l.merge(l1)
 print "\nmerge:"
