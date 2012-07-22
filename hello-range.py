@@ -18,7 +18,7 @@ for i in xrange(1,10):
 print "all:"
 for i in l:
 	print i
-	
+
 x,y=l.detailed_search(100)
 assert y==None
 assert l.at(x)==range_item(90,5)
@@ -44,7 +44,6 @@ print "\nslice:"
 i2=l.index(80)
 for x in l.slice(i1,i2):
 	print x
-
 
 l.remove(range_item(2,3))
 print "after remove the first item, now len is", len(l)

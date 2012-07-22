@@ -61,6 +61,20 @@ typedef map<addr_t, range_item
 
 typedef range_map_t::iterator range_iter;
 
+range_iter operator+(range_iter x, unsigned long c)
+{
+    for (unsigned long i=0; i < c; ++i)
+        ++x;
+    return x;
+}
+
+range_iter operator-(range_iter x, unsigned long c)
+{
+    for (unsigned long i=0; i < c; ++i)
+        --x;
+    return x;
+}
+
 bool operator==(const range_item& s, const object& o)
 {
 	if(o.is_none())
@@ -140,10 +154,19 @@ struct range_list{
 		return true;
 	}
 
+    void del(range_iter it)
+    {
+        if(it!=end()){
+            _data.erase(it);
+            return;
+        }
+		throw std::invalid_argument("not in list");
+    }
+
 	void remove(const range_item& obj)
 	{
 		range_iter it=_simple_search(obj.address);
-		if(it->second==obj){
+		if(it!=end() && it->second==obj){
 			_data.erase(it);
 			return;
 		}
@@ -153,7 +176,7 @@ struct range_list{
 	void remove_address(addr_t address)
 	{
 		range_iter it=_simple_search(address);
-		if(it->second.has(address)){
+		if(it!=end() && it->second.has(address)){
 			_data.erase(it);
 			return;
 		}
@@ -228,6 +251,12 @@ struct range_list{
 		return it->second;
 	}
 
+    void merge(const range_list& o)
+    {
+        for(range_iter it=o.begin(),end=o.end();it!=end;++it){
+            insert(it->second);
+        }
+    }
 };
 
 void translator(const invalid_argument& x) {
@@ -252,8 +281,12 @@ BOOST_PYTHON_MODULE(range_list)
 	.def("insert", &range_list::insert)
 	.def("remove", &range_list::remove)
 	.def("remove_address", &range_list::remove_address)
+	.def("del", &range_list::del)
+	.def("merge", &range_list::merge)
 	.def("search", &range_list::search,return_internal_reference<>())
 	.def("index",&range_list::index)
+	.def("begin",&range_list::begin)
+	.def("end",&range_list::end)
 	.def("at", &range_list::at,return_internal_reference<>())
 	.def("slice",&range_list::slice)
 	.def("slice",&range_list::slice2)
@@ -263,6 +296,8 @@ BOOST_PYTHON_MODULE(range_list)
 	class_<range_iter>("range_iter")
 	.def(self_ns::self == self_ns::self)
 	.def(self_ns::self != self_ns::self)
+	.def(self_ns::self + int())
+	.def(self_ns::self - int())
 	;
 	class_<range_slice>("range_slice", init<range_iter, range_iter>())
 	.def("__iter__", &range_slice::own, return_internal_reference<>())
