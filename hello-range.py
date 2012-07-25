@@ -94,6 +94,7 @@ l.merge(l1)
 print "\nmerge:"
 for x in l:
   print x
+i4=l.index(a)
 
 class range_item_s(range_item):
     # "range" is reserved
