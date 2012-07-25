@@ -48,12 +48,13 @@ assert x==None
 assert l[y]==range_item(2,3)
 
 print "\nslice to end:"
-i1=l.index(50)
+i1=l.index_address(50)
+assert i1==l.index(range_item(50,5))
 for x in l.slice(i1):
 	print x
 
 print "\nslice:"
-i2=l.index(80)
+i2=l.index_address(80)
 for x in l.slice(i1,i2):
 	print x
 

@@ -155,7 +155,16 @@ ok:
     }
 
 
-    range_iter index(addr_t address)
+    range_iter index(const object& obj)
+    {
+        addr_t a = extract<addr_t>(obj.attr("address"));
+        range_iter it=_simple_search(a), end=_data.end();
+        if(it==end || !__has(it,a))
+            throw std::invalid_argument("not in list");
+        return it;
+    }
+
+    range_iter index_address(addr_t address)
     {
         range_iter it=_simple_search(address), end=_data.end();
         if(it==end || !__has(it,address))
@@ -242,6 +251,7 @@ BOOST_PYTHON_MODULE(range_list)
     .def("merge", &range_list::merge)
     .def("search", &range_list::search)
     .def("index",&range_list::index)
+    .def("index_address",&range_list::index_address)
     .def("begin",&range_list::begin)
     .def("end",&range_list::end)
     .def("at", &range_list::at)
