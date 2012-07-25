@@ -49,7 +49,14 @@ assert l[y]==range_item(2,3)
 
 print "\nslice to end:"
 i1=l.index_address(50)
-assert i1==l.index(range_item(50,5))
+
+caught=False
+try:
+	assert i1==l.index(range_item(50,5))
+except ValueError:
+	caught=True;
+assert caught
+
 for x in l.slice(i1):
 	print x
 
@@ -72,7 +79,9 @@ l1=range_list()
 assert l1.insert(range_item(200,5))
 assert l1.insert(range_item(220,5))
 assert l1.insert(range_item(210,5))
-assert l1.insert(range_item(190,5))
+a=range_item(190,5)
+assert l1.insert(a)
+i4=l1.index(a)
 assert l1.insert(range_item(205,5))
 assert not l1.insert(range_item(190,5))
 assert not l1.insert(range_item(189,5))

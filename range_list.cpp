@@ -161,6 +161,8 @@ ok:
         range_iter it=_simple_search(a), end=_data.end();
         if(it==end || !__has(it,a))
             throw std::invalid_argument("not in list");
+        if(obj!=it->second)
+            throw std::invalid_argument("not the same object!");
         return it;
     }
 
